@@ -45,7 +45,6 @@ export function todoReducer(
     }
 
     case ActionTypes.LoadSingleTodoFinished: {
-      console.log(action.payload);
       return {
         ...state,
         loading: false,

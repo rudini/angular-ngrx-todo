@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Todo } from '@app/models/todo';
-import { getSelectedItem, TodoState } from '@app/todo/store';
+import { getSelectedItem } from '@app/todo/store';
 import { LoadSingleTodoAction } from '@app/todo/store/todo.actions';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 export class TodoDetailComponent implements OnInit {
   todo$: Observable<Todo>;
 
-  constructor(private route: ActivatedRoute, private store: Store<TodoState>) {}
+  constructor(private route: ActivatedRoute, private store: Store<any>) {}
 
   ngOnInit() {
     this.todo$ = this.store.pipe(select(getSelectedItem));
