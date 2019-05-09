@@ -7,29 +7,29 @@ import { ReducerTodoState, todoReducer } from './todo.reducer';
 
 export const featureStateName = 'todoFeature';
 
-export interface TodoState {
+export interface CompleteTodoModuleState {
   todo: ReducerTodoState;
 }
 
-export const todoReducers: ActionReducerMap<TodoState> = {
+export const allTodoReducers: ActionReducerMap<CompleteTodoModuleState> = {
   todo: todoReducer
 };
 
-export const getTodoFeatureState = createFeatureSelector<TodoState>(
-  featureStateName
-);
+export const getTodoFeatureState = createFeatureSelector<
+  CompleteTodoModuleState
+>(featureStateName);
 
 export const getAllUndoneItems = createSelector(
   getTodoFeatureState,
-  (state: TodoState) => state.todo.items.filter(x => !x.done)
+  (state: CompleteTodoModuleState) => state.todo.items.filter(x => !x.done)
 );
 
 export const getAllDoneItems = createSelector(
   getTodoFeatureState,
-  (state: TodoState) => state.todo.items.filter(x => x.done)
+  (state: CompleteTodoModuleState) => state.todo.items.filter(x => x.done)
 );
 
 export const getSelectedItem = createSelector(
   getTodoFeatureState,
-  (state: TodoState) => state.todo.selectedItem
+  (state: CompleteTodoModuleState) => state.todo.selectedItem
 );

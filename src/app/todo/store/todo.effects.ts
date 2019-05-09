@@ -11,10 +11,7 @@ import {
   LoadAllTodosFinishedAction,
   LoadSingleTodoAction,
   LoadSingleTodoFinishedAction,
-  SetAsDoneAction,
-  SetAsDoneFinishedAction,
-  DeleteTodoAction,
-  DeleteTodoFinishedAction
+  SetAsDoneFinishedAction
 } from './todo.actions';
 
 @Injectable()
@@ -69,28 +66,12 @@ export class TodoEffects {
   @Effect()
   markAsDone$ = this.actions$.pipe(
     ofType(ActionTypes.SetAsDone),
-    switchMap((action: SetAsDoneAction) =>
+    switchMap(({ payload }) =>
       this.todoService
-        .updateItem(action.payload)
+        .updateItem(payload)
         .pipe(
           map(
             (todo: Todo) => new SetAsDoneFinishedAction(todo),
-            catchError(error => of(error))
-          )
-        )
-    )
-  );
-
-  @Effect()
-  deleteTodo$ = this.actions$.pipe(
-    ofType(ActionTypes.DeleteTodo),
-    map((action: DeleteTodoAction) => action.payload),
-    switchMap((todo: Todo) =>
-      this.todoService
-        .deleteItem(todo)
-        .pipe(
-          map(
-            () => new DeleteTodoFinishedAction(todo),
             catchError(error => of(error))
           )
         )

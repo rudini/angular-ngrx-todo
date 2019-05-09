@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Todo } from '@app/models/todo';
-import { getAllDoneItems, getAllUndoneItems, TodoState } from '@app/todo/store';
 import {
   AddTodoAction,
   LoadAllTodosAction,
-  SetAsDoneAction,
-  DeleteTodoAction
+  SetAsDoneAction
 } from '@app/todo/store/todo.actions';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-content',
@@ -19,11 +18,15 @@ export class ContentComponent implements OnInit {
   items$: Observable<Todo[]>;
   doneItems$: Observable<Todo[]>;
 
-  constructor(private store: Store<TodoState>) {}
+  constructor(private store: Store<any>) {}
 
   ngOnInit() {
-    this.items$ = this.store.pipe(select(getAllUndoneItems));
-    this.doneItems$ = this.store.pipe(select(getAllDoneItems));
+    this.items$ = this.store.pipe(
+      select(state => state.todoFeature.items.filter(x => !x.done))
+    );
+    this.doneItems$ = this.store.pipe(
+      select(state => state.todoFeature.items.filter(x => x.done))
+    );
 
     this.store.dispatch(new LoadAllTodosAction());
   }
@@ -34,9 +37,5 @@ export class ContentComponent implements OnInit {
 
   markAsDone(item: Todo) {
     this.store.dispatch(new SetAsDoneAction(item));
-  }
-
-  deleteItem(item: Todo) {
-    this.store.dispatch(new DeleteTodoAction(item));
   }
 }

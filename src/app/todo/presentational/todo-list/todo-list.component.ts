@@ -11,7 +11,6 @@ export class TodoListComponent {
   @Input() doneItems: Todo[] = [];
 
   @Output() markAsDone = new EventEmitter();
-  @Output() delete = new EventEmitter();
 
   moveToDone(item: Todo) {
     item.done = true;
@@ -19,8 +18,6 @@ export class TodoListComponent {
   }
 
   deleteItem(item: Todo) {
-    if (confirm('Really delete?')) {
-      this.delete.emit(item);
-    }
+    // TODO IMPLEMENT HERE
   }
 }

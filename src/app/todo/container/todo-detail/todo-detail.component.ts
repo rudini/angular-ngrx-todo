@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-todo-detail',
   templateUrl: './todo-detail.component.html',
-  styleUrls: ['./todo-detail.component.css'],
+  styleUrls: ['./todo-detail.component.css']
 })
 export class TodoDetailComponent implements OnInit {
   todo$: Observable<Todo>;

@@ -8,12 +8,13 @@ import { ContentComponent } from './container/content/content.component';
 import { TodoDetailComponent } from './container/todo-detail/todo-detail.component';
 import { TodoFormComponent } from './presentational/todo-form/todo-form.component';
 import { TodoListComponent } from './presentational/todo-list/todo-list.component';
-import { featureStateName, todoReducers } from './store';
+import { featureStateName } from './store';
 import { TodoEffects } from './store/todo.effects';
+import { todoReducer } from './store/todo.reducer';
 
 const routes: Routes = [
   { path: '', component: ContentComponent },
-  { path: ':id', component: TodoDetailComponent },
+  { path: ':id', component: TodoDetailComponent }
 ];
 
 @NgModule({
@@ -21,15 +22,15 @@ const routes: Routes = [
     CommonModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
-    StoreModule.forFeature(featureStateName, todoReducers),
-    EffectsModule.forFeature([TodoEffects]),
+    StoreModule.forFeature(featureStateName, todoReducer),
+    EffectsModule.forFeature([TodoEffects])
   ],
   exports: [],
   declarations: [
     TodoFormComponent,
     TodoListComponent,
     ContentComponent,
-    TodoDetailComponent,
-  ],
+    TodoDetailComponent
+  ]
 })
 export class TodoModule {}

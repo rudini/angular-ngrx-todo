@@ -19,7 +19,6 @@ export function todoReducer(
 ): ReducerTodoState {
   switch (action.type) {
     case ActionTypes.AddTodo:
-    case ActionTypes.DeleteTodo:
     case ActionTypes.LoadAllTodos:
     case ActionTypes.LoadSingleTodo:
     case ActionTypes.SetAsDone: {
@@ -46,18 +45,11 @@ export function todoReducer(
     }
 
     case ActionTypes.LoadSingleTodoFinished: {
+      console.log(action.payload);
       return {
         ...state,
         loading: false,
         selectedItem: action.payload
-      };
-    }
-
-    case ActionTypes.DeleteTodoFinished: {
-      return {
-        ...state,
-        loading: false,
-        items: [...state.items.filter(x => x !== action.payload)]
       };
     }
 
