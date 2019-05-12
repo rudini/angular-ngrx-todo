@@ -58,7 +58,8 @@ export function todoReducer(
       state.items[index] = action.payload;
 
       return {
-        ...state
+        ...state,
+        loading: false
       };
     }
 
