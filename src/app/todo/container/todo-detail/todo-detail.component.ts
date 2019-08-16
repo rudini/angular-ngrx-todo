@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Todo } from '@app/models/todo';
-import * as fromTodoStore from '@app/todo/store';
-import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -15,10 +13,10 @@ export class TodoDetailComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private store: Store<fromTodoStore.TodoState>
+    /*inject store*/
   ) {
-    this.todo$ = this.store.pipe(select(fromTodoStore.getSelectedItem));
+    // todo: select data from store
     const id = this.route.snapshot.params.id;
-    this.store.dispatch(fromTodoStore.loadSingleTodo({ payload: id }));
+    // todo: dispatch action
   }
 }

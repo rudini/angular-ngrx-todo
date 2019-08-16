@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Todo } from '@app/models/todo';
-import { getAllDoneItems, getAllUndoneItems, TodoState } from '@app/todo/store';
-import * as fromTodoStore from '@app/todo/store';
-import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -14,22 +11,19 @@ export class ContentComponent {
   items$: Observable<Todo[]>;
   doneItems$: Observable<Todo[]>;
 
-  constructor(private store: Store<TodoState>) {
-    this.items$ = this.store.pipe(select(getAllUndoneItems));
-    this.doneItems$ = this.store.pipe(select(getAllDoneItems));
-
-    this.store.dispatch(fromTodoStore.loadAllTodos());
+  constructor(/*inject store*/) {
+    // todo: select data from store
   }
 
   addTodo(item: string) {
-    this.store.dispatch(fromTodoStore.addTodo({ payload: item }));
+    // todo: dispatch action
   }
 
   markAsDone(item: Todo) {
-    this.store.dispatch(fromTodoStore.setAsDone({ payload: item }));
+    // todo: dispatch action
   }
 
   deleteItem(item: Todo) {
-    this.store.dispatch(fromTodoStore.deleteTodo({ payload: item }));
+    // todo: dispatch action
   }
 }
