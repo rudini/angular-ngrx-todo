@@ -10,13 +10,11 @@ import { Observable } from 'rxjs';
   templateUrl: './content.component.html',
   styleUrls: ['./content.component.css']
 })
-export class ContentComponent implements OnInit {
+export class ContentComponent {
   items$: Observable<Todo[]>;
   doneItems$: Observable<Todo[]>;
 
-  constructor(private store: Store<TodoState>) {}
-
-  ngOnInit() {
+  constructor(private store: Store<TodoState>) {
     this.items$ = this.store.pipe(select(getAllUndoneItems));
     this.doneItems$ = this.store.pipe(select(getAllDoneItems));
 
