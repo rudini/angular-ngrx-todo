@@ -1,35 +1,122 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Store } from '@ngrx/store';
+import { Store, Action, MemoizedSelector } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { TodoFormComponent } from '../todo-form/todo-form.component';
-import { TodoListComponent } from '../todo-list/todo-list.component';
 import { ContentComponent } from './content.component';
+import { TodoFormComponent } from '@app/todo/presentational/todo-form/todo-form.component';
+import { TodoListComponent } from '@app/todo/presentational/todo-list/todo-list.component';
+import { TodoState } from '@app/todo/store';
+import { Todo } from '@app/models/todo';
+import * as fromTodoStore from '@app/todo/store';
+import { cold } from 'jest-marbles';
+import { MockStoreImpl } from '@app/shared/mock.store';
+import { of } from 'rxjs';
 
-describe('ContentComponent', () => {
-  let component: ContentComponent;
+describe('ContentComponent using Testbed', () => {
+  let testee: ContentComponent;
   let fixture: ComponentFixture<ContentComponent>;
-  const initialState = { todo: { todo: { items: [] } } };
-  let store: MockStore<{ todo: { todo: { items: [] } } }>;
+  const initialState = {
+    todo: {
+      items: [],
+      selectedItem: null,
+      loading: false
+    }
+  };
+  let getAllUndoneItemsSelector: MemoizedSelector<TodoState, Todo[]>;
+  let getAllDoneItemsSelector: MemoizedSelector<TodoState, Todo[]>;
+  let store: MockStore<TodoState>;
+  let dispatchSpy: jest.SpyInstance<void, [Action]>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, RouterTestingModule],
+      imports: [RouterTestingModule, ReactiveFormsModule],
       providers: [provideMockStore({ initialState })],
-      declarations: [ContentComponent, TodoFormComponent, TodoListComponent],
+      declarations: [ContentComponent, TodoFormComponent, TodoListComponent]
     }).compileComponents();
 
     store = TestBed.get(Store);
+    getAllUndoneItemsSelector = store.overrideSelector(
+      fromTodoStore.getAllUndoneItems,
+      [] as Todo[]
+    );
+    getAllDoneItemsSelector = store.overrideSelector(
+      fromTodoStore.getAllDoneItems,
+      [] as Todo[]
+    );
+    dispatchSpy = jest.spyOn(store, 'dispatch');
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ContentComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    testee = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('it should create', () => {
+    // act
+    fixture.detectChanges();
+    // assert
+    expect(testee).toBeTruthy();
+  });
+
+  it('it should dispatch loadAllTodos', () => {
+    // act is the creation of the testee component
+    // assert
+    expect(dispatchSpy).toHaveBeenCalledWith(fromTodoStore.loadAllTodos());
+  });
+
+  it('it should emit values to the items$ when data has been loaded', () => {
+    // act
+    getAllUndoneItemsSelector.setResult([
+      { id: '1', value: 'this is a value' },
+      { id: '2', value: 'this is another value' }
+    ] as Todo[]);
+    // assert
+    expect(testee.items$).toBeObservable(
+      cold('a', {
+        a: [
+          { id: '1', value: 'this is a value' },
+          { id: '2', value: 'this is another value' }
+        ]
+      })
+    );
+  });
+
+  it('it should dispatch addTodo action when adding a todo', () => {
+    // act
+    testee.addTodo('a new item');
+    // assert
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      fromTodoStore.addTodo({ payload: 'a new item' })
+    );
+  });
+
+  it('it should display all undone items', () => {
+    // arrange
+    getAllUndoneItemsSelector.setResult([
+      { id: '1', value: 'this is a value' },
+      { id: '2', value: 'this is another value' }
+    ] as Todo[]);
+    // act
+    fixture.detectChanges();
+    const node: HTMLElement = fixture.elementRef.nativeElement;
+    // assert
+    expect(
+      node.querySelector('[data-test="todo-undone_1"]').innerHTML
+    ).toContain('this is a value');
+    expect(
+      node.querySelector('[data-test="todo-undone_2"]').innerHTML
+    ).toContain('this is another value');
+  });
+
+
+  it('it should dispatch loadAllTodos w/o Testbed', () => {
+    // arrange
+    const storeMock: any = new MockStoreImpl();
+    dispatchSpy = jest.spyOn(store, 'dispatch');
+    // act
+    new ContentComponent(store);
+    // assert
+    expect(dispatchSpy).toHaveBeenCalledWith(fromTodoStore.loadAllTodos());
   });
 });

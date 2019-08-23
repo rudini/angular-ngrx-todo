@@ -7,7 +7,7 @@
           <div class="checkbox">
             <label>
               <input type="checkbox" (change)="moveToDone(item)" /><a
-                [routerLink]="['/todo', item.id]"
+                [routerLink]="['/todo', item.id]" [attr.data-test]="'todo-undone_' + item.id"
               >
                 {{ item.value }}
               </a></label
