@@ -10,10 +10,9 @@ import { TodoState } from '@app/todo/store';
 import { Todo } from '@app/models/todo';
 import * as fromTodoStore from '@app/todo/store';
 import { cold } from 'jest-marbles';
-import { MockStoreImpl } from '@app/shared/mock.store';
-import { of } from 'rxjs';
+import { TestStore } from '@app/shared/mock.store';
 
-describe('ContentComponent using Testbed', () => {
+describe('ContentComponent', () => {
   let testee: ContentComponent;
   let fixture: ComponentFixture<ContentComponent>;
   const initialState = {
@@ -112,11 +111,32 @@ describe('ContentComponent using Testbed', () => {
 
   it('it should dispatch loadAllTodos w/o Testbed', () => {
     // arrange
-    const storeMock: any = new MockStoreImpl();
+    const storeMock: any = new TestStore();
     dispatchSpy = jest.spyOn(store, 'dispatch');
     // act
-    new ContentComponent(store);
+    new ContentComponent(storeMock);
     // assert
     expect(dispatchSpy).toHaveBeenCalledWith(fromTodoStore.loadAllTodos());
+  });
+
+
+  it('it should emit values to the items$ when data has been loaded w/o Testbed', () => {
+    // arrange
+    const storeMock = new TestStore([{
+      selector: fromTodoStore.getAllUndoneItems, value: [
+          { id: '1', value: 'this is a value' },
+          { id: '2', value: 'this is another value' }
+        ] as Todo[] }]);
+    // act
+    const testeewo = new ContentComponent(storeMock);
+    // assert
+    expect(testeewo.items$).toBeObservable(
+      cold('a', {
+        a: [
+          { id: '1', value: 'this is a value' },
+          { id: '2', value: 'this is another value' }
+        ]
+      })
+    );
   });
 });

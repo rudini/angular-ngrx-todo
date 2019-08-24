@@ -1,26 +1,19 @@
 import { Observable } from 'rxjs';
 import { cold } from 'jest-marbles';
+import { Store, ActionsSubject, ReducerManager, ReducerManagerDispatcher } from '@ngrx/store';
+import { MockStore, provideMockStore, MockState, MockSelector } from '@ngrx/store/testing';
 
-export class MockStoreImpl {
-  constructor(private selectorMap: { selector: any; value: Observable<any> }[] = []) {}
-
-  public dispatch(action: any): void {
+export class TestStore extends MockStore<any> {
+  constructor(private selectorMap: MockSelector[] = []) {
+    super(
+      new MockState(),
+      new ActionsSubject(),
+      new ReducerManager(null, {}, {}, () => null),
+      {},
+      selectorMap,
+      );
   }
 
-  public pipe(selectfn: () => any) {
-    const selector = selectfn.arguments[0];
-    const found = this.selectorMap.filter(x => x.selector === selector);
-    if (found.length !== 0) {
-        return found[0].value;
-    }
-    return cold('a', { a: {} });
+  dispatch(action: any): void {
   }
-
-  // public select(selector: any): Observable<any> {
-  //     const found = this.selectorMap.filter(x => x.selector === selector);
-  //     if (found.length !== 0) {
-  //         return found[0].value;
-  //     }
-  //     return cold('a', { a: {} });
-  // }
 }
