@@ -90,23 +90,24 @@ describe('ContentComponent', () => {
     );
   });
 
-  it('it should display all undone items', () => {
-    // arrange
-    getAllUndoneItemsSelector.setResult([
-      { id: '1', value: 'this is a value' },
-      { id: '2', value: 'this is another value' }
-    ] as Todo[]);
-    // act
-    fixture.detectChanges();
-    const node: HTMLElement = fixture.elementRef.nativeElement;
-    // assert
-    expect(
-      node.querySelector('[data-test="todo-undone_1"]').innerHTML
-    ).toContain('this is a value');
-    expect(
-      node.querySelector('[data-test="todo-undone_2"]').innerHTML
-    ).toContain('this is another value');
-  });
+ // !moved to todo-list.component.spec
+  // it('it should display all undone items', () => {
+  //   // arrange
+  //   getAllUndoneItemsSelector.setResult([
+  //     { id: '1', value: 'this is a value' },
+  //     { id: '2', value: 'this is another value' }
+  //   ] as Todo[]);
+  //   // act
+  //   fixture.detectChanges();
+  //   const node: HTMLElement = fixture.elementRef.nativeElement;
+  //   // assert
+  //   expect(
+  //     node.querySelector('[data-test="todo-undone_1"]').innerHTML
+  //   ).toContain('this is a value');
+  //   expect(
+  //     node.querySelector('[data-test="todo-undone_2"]').innerHTML
+  //   ).toContain('this is another value');
+  // });
 
 
   it('it should dispatch loadAllTodos w/o Testbed', () => {
