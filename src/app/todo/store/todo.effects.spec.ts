@@ -45,7 +45,7 @@ describe('Todo effects tests', () => {
     const expected$ = cold('a', {
       a: loadAllTodosFinished({ payload: [] }),
     });
-    const spy = jest.spyOn(todoService, 'getItems').mockReturnValueOnce(of([]));
+    jest.spyOn(todoService, 'getItems').mockReturnValueOnce(of([]));
     // act
     actions = cold('a', { a: loadAllTodos() });
     // assert
