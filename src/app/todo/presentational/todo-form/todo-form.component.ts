@@ -16,11 +16,6 @@ export class TodoFormComponent {
       todoValue: ['', Validators.required],
       done: [false],
     });
-
-    // this.form = new FormGroup({
-    //   todoValue: new FormControl('', Validators.required),
-    //   done: new FormControl(false)
-    // });
   }
 
   addTodo() {

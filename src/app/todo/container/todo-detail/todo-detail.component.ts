@@ -2,8 +2,11 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Todo } from '@app/models/todo';
 import * as fromTodoStore from '@app/todo/store';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { useStore } from '../../store/store';
+import { TodoState, getSelectedItem, TodoEffects } from '@app/todo/store';
+import { ReducerTodoState } from '../../store/todo.reducer';
 
 @Component({
   selector: 'app-todo-detail',
@@ -15,10 +18,18 @@ export class TodoDetailComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private store: Store<fromTodoStore.TodoState>
+    private effects: TodoEffects
   ) {
-    this.todo$ = this.store.pipe(select(fromTodoStore.getSelectedItem));
+
+    const { useEffect, useState } = useStore<TodoState, ReducerTodoState>(
+      'todo'
+    );
+
+    this.todo$ = useState(getSelectedItem);
     const id = this.route.snapshot.params.id;
-    this.store.dispatch(fromTodoStore.loadSingleTodo({ payload: id }));
+
+    useEffect(() => this.effects.loadSingleTodo(id));
   }
 }
+
+

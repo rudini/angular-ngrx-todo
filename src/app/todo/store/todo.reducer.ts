@@ -1,6 +1,4 @@
 import { Todo } from '../../models/todo';
-import * as todoActions from './todo.actions';
-import { createReducer, on, Action } from '@ngrx/store';
 
 export interface ReducerTodoState {
   items: Todo[];
@@ -14,53 +12,51 @@ export const initialState: ReducerTodoState = {
   loading: false
 };
 
-const todoReducerInternal = createReducer(
-  initialState,
-  on(
-    todoActions.addTodo,
-    todoActions.deleteTodo,
-    todoActions.loadAllTodos,
-    todoActions.loadSingleTodo,
-    todoActions.setAsDone,
-    state => ({
-      ...state,
-      loading: true
-    })
-  ),
-  on(todoActions.addTodoFinished, (state, { payload }) => ({
+export const loading = (state: ReducerTodoState) =>
+  ({
     ...state,
-    loading: false,
-    items: [...state.items, payload]
-  })),
-  on(todoActions.loadAllTodosFinished, (state, { payload }) => ({
+    loading: true
+  } as ReducerTodoState);
+
+export const loadAllTodosFinished = (payload: Todo[]) => (
+  state: ReducerTodoState
+) =>
+  ({
     ...state,
     loading: false,
     items: [...payload]
-  })),
-  on(todoActions.loadSingleTodoFinished, (state, { payload }) => ({
+  } as ReducerTodoState);
+
+export const addTodoFinished = (payload: Todo) => (state: ReducerTodoState) =>
+  ({
+    ...state,
+    loading: false,
+    items: [...state.items, payload]
+  } as ReducerTodoState);
+
+export const loadSingleTodoFinished = (payload: Todo) => (
+  state: ReducerTodoState
+) =>
+  ({
     ...state,
     loading: false,
     selectedItem: payload
-  })),
-  on(todoActions.deleteTodoFinished, (state, { payload }) => ({
-    ...state,
-    loading: false,
-    items: [...state.items.filter(x => x !== payload)]
-  })),
-  on(todoActions.setAsDoneFinished, (state, { payload }) => {
-    const index = state.items.findIndex(x => x.id === payload.id);
+  } as ReducerTodoState);
 
-    state.items[index] = payload;
+export const setAsDoneFinished = (payload: Todo) => (
+  state: ReducerTodoState
+) => {
+  const index = state.items.findIndex(x => x.id === payload.id);
+  state.items[index] = payload;
+  return {
+    ...state
+  };
+};
 
-    return {
-      ...state
-    };
-  })
-);
-
-export function todoReducer(
-  state: ReducerTodoState | undefined,
-  action: Action
-) {
-  return todoReducerInternal(state, action);
-}
+export const deleteTodoFinished = (payload: Todo) => (
+  state: ReducerTodoState
+) => ({
+  ...state,
+  loading: false,
+  items: [...state.items.filter(x => x !== payload)]
+});

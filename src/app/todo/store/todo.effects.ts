@@ -1,75 +1,54 @@
 import { Injectable } from '@angular/core';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import * as todoActions from './todo.actions';
+import { map, startWith } from 'rxjs/operators';
 import { TodoService } from '@app/core/services/todo.service';
+import {
+  loadAllTodosFinished,
+  loading,
+  addTodoFinished,
+  setAsDoneFinished,
+  deleteTodoFinished,
+  loadSingleTodoFinished
+} from './todo.reducer';
+import { Todo } from '@app/models/todo';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class TodoEffects {
-  constructor(private actions$: Actions, private todoService: TodoService) {}
+  constructor(private todoService: TodoService) {}
 
-  loadTodos$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(todoActions.loadAllTodos),
-      switchMap(action =>
-        this.todoService.getItems().pipe(
-          map(todos => todoActions.loadAllTodosFinished({ payload: todos })),
-          catchError(error => of(error))
-        )
-      )
-    )
-  );
+  loadTodos = () =>
+    this.todoService.getItems().pipe(
+      map(payload => loadAllTodosFinished(payload)),
+      // TODO handle error
+      startWith(loading)
+    );
 
-  loadSingleTodos$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(todoActions.loadSingleTodo),
-      map(action => action.payload),
-      switchMap(payload =>
-        this.todoService.getItem(payload).pipe(
-          map(todo => todoActions.loadSingleTodoFinished({ payload: todo })),
-          catchError(error => of(error))
-        )
-      )
-    )
-  );
+  loadSingleTodo = (payload: string) =>
+    this.todoService.getItem(payload).pipe(
+      map(todo => loadSingleTodoFinished(todo)),
+      // TODO handle error
+      startWith(loading)
+    );
 
-  addTodo$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(todoActions.addTodo),
-      map(action => action.payload),
-      switchMap(payload =>
-        this.todoService.addItem(payload).pipe(
-          map(todo => todoActions.addTodoFinished({ payload: todo })),
-          catchError(error => of(error))
-        )
-      )
-    )
-  );
+  addTodo = (payload: string) =>
+    this.todoService.addItem(payload).pipe(
+      map(addedTodo => addTodoFinished(addedTodo)),
+      // TODO handle error
+      startWith(loading)
+    );
 
-  markAsDone$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(todoActions.setAsDone),
-      map(action => action.payload),
-      switchMap(payload =>
-        this.todoService.updateItem(payload).pipe(
-          map(todo => todoActions.setAsDoneFinished({ payload: todo })),
-          catchError(error => of(error))
-        )
-      )
-    )
-  );
+  markAsDone = (payload: Todo) =>
+    this.todoService.updateItem(payload).pipe(
+      map(finishedTodo => setAsDoneFinished(finishedTodo)),
+      // TODO handle error
+      startWith(loading)
+    );
 
-  deleteTodo$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(todoActions.deleteTodo),
-      map(action => action.payload),
-      switchMap(payload =>
-        this.todoService.deleteItem(payload).pipe(
-          map(_ => todoActions.deleteTodoFinished({ payload })),
-          catchError(error => of(error))
-        )
-      )
-    )
-  );
+  deleteTodo = (payload: Todo) =>
+    this.todoService.deleteItem(payload).pipe(
+      map(_ => deleteTodoFinished(payload)),
+      // TODO handle error
+      startWith(loading)
+    );
 }
